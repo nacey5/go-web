@@ -40,3 +40,47 @@ func (this *User) AddUser2() (err error) {
 	}
 	return
 }
+
+// GetUserById 获取单条的User信息
+func (this *User) GetUserById() (user *User, err error) {
+	sqlStr := "select id,user_name,password,email from users where id=?"
+	//执行
+	row := _const.DB.QueryRow(sqlStr, this.Id)
+	var id int
+	var userName string
+	var password string
+	var email string
+	err = row.Scan(&id, &userName, &password, &email)
+	if err != nil {
+		return nil, err
+	}
+	user = &User{
+		id, userName, password, email,
+	}
+	return
+}
+
+// GetAllUsers 获取所有的User
+func (this *User) GetAllUsers() (users []*User, err error) {
+	sqlStr := "select id,user_name,password,email from users where 1=1"
+	rows, err := _const.DB.Query(sqlStr)
+	if err != nil {
+		return
+	}
+	users = make([]*User, 2)
+	for rows.Next() {
+		var id int
+		var userName string
+		var password string
+		var email string
+		err = rows.Scan(&id, &userName, &password, &email)
+		if err != nil {
+			return
+		}
+		user := &User{
+			id, userName, password, email,
+		}
+		users = append(users, user)
+	}
+	return
+}
